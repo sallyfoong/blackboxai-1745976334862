@@ -1,0 +1,13 @@
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">CME Website</h1>
+    <nav class="space-x-6 text-gray-700 font-semibold flex items-center">
+      <a href="../index.php" class="hover:text-blue-600">Home</a>
+      <a href="#" class="hover:text-blue-600">Shop</a>
+      <a href="#" class="hover:text-blue-600">About Us</a>
+      <a href="../member/profile.php" class="hover:text-blue-600">Reward Mall</a>
+      <a href="../member/login.php" class="hover:text-blue-600">Login</a>
+      <a href="../member/register.php" class="hover:text-blue-600">Register</a>
+    </nav>
+  </div>
+</header>
