@@ -1,0 +1,85 @@
+<?php
+// register.php - Member registration page with dynamic navbar
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register - CME Website</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <?php include __DIR__ . '/../components/navbar.php'; ?>
+
+  <main class="flex-grow flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
+      <h1 class="text-2xl font-bold mb-6 text-center">Create an Account</h1>
+      <form id="registerForm" class="space-y-4">
+        <div>
+          <label for="name" class="block text-gray-700 font-semibold mb-1">Name</label>
+          <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="email" class="block text-gray-700 font-semibold mb-1">Email</label>
+          <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="password" class="block text-gray-700 font-semibold mb-1">Password</label>
+          <input type="password" id="password" name="password" required minlength="6" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition">Register</button>
+      </form>
+      <p class="mt-4 text-center text-gray-600">
+        Already have an account?
+        <a href="login.php" class="text-blue-600 hover:underline">Login here</a>
+      </p>
+      <p id="message" class="mt-4 text-center text-sm"></p>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const messageEl = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageEl.textContent = '';
+      const formData = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        password: form.password.value
+      };
+
+      try {
+        const response = await fetch('/src/api.php?action=register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+          messageEl.textContent = 'Registration successful! You can now login.';
+          messageEl.className = 'mt-4 text-center text-green-600';
+          form.reset();
+        } else {
+          messageEl.textContent = result.message || 'Registration failed.';
+          messageEl.className = 'mt-4 text-center text-red-600';
+        }
+      } catch (error) {
+        messageEl.textContent = 'An error occurred. Please try again.';
+        messageEl.className = 'mt-4 text-center text-red-600';
+      }
+    });
+  </script>
+
+</body>
+</html>
