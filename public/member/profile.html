@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profile - CME Website</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+  <body class="bg-gray-50 min-h-screen p-6">
+
+  <div id="navbar-placeholder"></div>
+  <script src="/js/navbar.js"></script>
+
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold mb-6 text-center">My Profile</h1>
+    <form id="profileForm" class="space-y-4 max-w-md mx-auto">
+      <div>
+        <label for="name" class="block text-gray-700 font-semibold mb-1">Name</label>
+        <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <div>
+        <label for="email" class="block text-gray-700 font-semibold mb-1">Email</label>
+        <input type="email" id="email" name="email" required readonly class="w-full border border-gray-300 rounded bg-gray-100 px-3 py-2" />
+      </div>
+      <div>
+        <label for="phone" class="block text-gray-700 font-semibold mb-1">Phone</label>
+        <input type="tel" id="phone" name="phone" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <div>
+        <label for="birthday" class="block text-gray-700 font-semibold mb-1">Birthday</label>
+        <input type="date" id="birthday" name="birthday" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <div>
+        <label for="gender" class="block text-gray-700 font-semibold mb-1">Gender</label>
+        <select id="gender" name="gender" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">Select gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="address" class="block text-gray-700 font-semibold mb-1">Address</label>
+        <textarea id="address" name="address" rows="3" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition">Update Profile</button>
+    </form>
+    <p id="message" class="mt-4 text-center text-sm"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('profileForm');
+    const messageEl = document.getElementById('message');
+
+    // Load member info from localStorage
+    const member = JSON.parse(localStorage.getItem('member'));
+    if (!member) {
+      alert('You are not logged in. Redirecting to login page.');
+      window.location.href = 'login.html';
+    } else {
+      form.name.value = member.name || '';
+      form.email.value = member.email || '';
+      form.phone.value = member.phone || '';
+      form.birthday.value = member.birthday || '';
+      form.gender.value = member.gender || '';
+      form.address.value = member.address || '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageEl.textContent = '';
+
+      const updatedData = {
+        id: member.id,
+        name: form.name.value.trim(),
+        phone: form.phone.value.trim(),
+        birthday: form.birthday.value,
+        gender: form.gender.value,
+        address: form.address.value.trim()
+      };
+
+      try {
+        const response = await fetch('/src/api.php?action=update_profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedData)
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+          messageEl.textContent = 'Profile updated successfully.';
+          messageEl.className = 'mt-4 text-center text-green-600';
+          // Update localStorage
+          Object.assign(member, updatedData);
+          localStorage.setItem('member', JSON.stringify(member));
+        } else {
+          messageEl.textContent = result.message || 'Update failed.';
+          messageEl.className = 'mt-4 text-center text-red-600';
+        }
+      } catch (error) {
+        messageEl.textContent = 'An error occurred. Please try again.';
+        messageEl.className = 'mt-4 text-center text-red-600';
+      }
+    });
+  </script>
+
+</body>
+</html>
